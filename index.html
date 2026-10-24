@@ -292,9 +292,12 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">URL Logo di GitHub / Online</label>
-                    <input type="text" id="setting-logo-url" placeholder="logo.png atau https://..." class="w-full border rounded-lg px-3 py-2 mt-1">
-                    <p class="text-[10px] text-slate-400 mt-1">Gunakan nama file di repo GitHub (cth: <code>logo.png</code>)</p>
+                    <label class="block font-medium text-slate-600 mb-1">Unggah Logo Toko (Dari Komputer)</label>
+                    <input type="file" id="setting-logo-file" accept="image/*" onchange="handleLogoUpload(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Atau URL Logo (GitHub / Online)</label>
+                    <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full border rounded-lg px-3 py-2 mt-1">
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">Nama Penandatangan / Kasir</label>
@@ -331,8 +334,8 @@
         // ==========================================
         // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
         // ==========================================
-        const SUPABASE_URL = 'https://edcynjxgcrbemaxrrofg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkY3luanhnY3JiZW1heHJyb2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3OTQ4MTcsImV4cCI6MjEwODM3MDgxN30.UvKZ-SDpWW9EqMQR1C00RVki9tX9SNnn-5vgaSIEJRg';
+        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         
         let sbClient = null;
         try {
@@ -349,7 +352,7 @@
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
             phone: "081234567890",
             city: "Denpasar",
-            logoUrl: "logo.png",
+            logoUrl: "",
             signer: "GSD CUSTOM (Kasir)"
         };
 
@@ -428,6 +431,18 @@
         function deleteItem(index) {
             items.splice(index, 1);
             renderItems();
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64String = e.target.result;
+                    document.getElementById('setting-logo-url').value = base64String;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function updateLogoSync(url) {
@@ -624,9 +639,6 @@
             window.open(waUrl, '_blank');
         }
 
-        // ==========================================
-        // FUNGSI SUPABASE & RIWAYAT (Menggunakan sbClient)
-        // ==========================================
         async function saveCurrentNota() {
             if (!sbClient) {
                 alert('Supabase belum dikonfigurasi! Masukkan SUPABASE_URL dan SUPABASE_ANON_KEY terlebih dahulu pada kode script.');
