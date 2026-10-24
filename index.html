@@ -25,8 +25,8 @@
     <header class="bg-indigo-700 text-white shadow-md no-print">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="bg-white p-2 rounded-lg text-indigo-700 font-bold text-xl shadow">
-                    <i class="fa-solid fa-receipt"></i>
+                <div id="header-logo-box" class="bg-white p-2 rounded-lg text-indigo-700 font-bold text-xl shadow w-12 h-12 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <i id="header-logo-icon" class="fa-solid fa-receipt"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold">GSD CUSTOM</h1>
@@ -310,10 +310,8 @@
 
     <!-- JavaScript Logic -->
     <script>
-        let items = [
-            { name: "Contoh Produk Custom A", qty: 2, price: 75000 },
-            { name: "Contoh Jasa Desain B", qty: 1, price: 150000 }
-        ];
+        // Daftar barang dimulai kosong (tanpa item demo)
+        let items = [];
 
         let storeConfig = {
             name: "GSD CUSTOM",
@@ -386,20 +384,27 @@
 
         function updateLogoSync(url) {
             storeConfig.logoUrl = url;
+            
+            // Header Logo Box
+            const headerBox = document.getElementById('header-logo-box');
+            // Dashboard Logo Box
             const dashBox = document.getElementById('dashboard-logo-box');
-            const img = document.getElementById('preview-logo-img');
-            const icon = document.getElementById('preview-logo-icon');
+            // Preview Logo Elements
+            const previewImg = document.getElementById('preview-logo-img');
+            const previewIcon = document.getElementById('preview-logo-icon');
 
             if (url && url.trim()) {
+                headerBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
                 dashBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
-                img.src = url;
-                img.classList.remove('hidden');
-                icon.classList.add('hidden');
+                previewImg.src = url;
+                previewImg.classList.remove('hidden');
+                previewIcon.classList.add('hidden');
             } else {
+                headerBox.innerHTML = `<i class="fa-solid fa-receipt"></i>`;
                 dashBox.innerHTML = `<i class="fa-solid fa-store"></i>`;
-                img.src = '';
-                img.classList.add('hidden');
-                icon.classList.remove('hidden');
+                previewImg.src = '';
+                previewImg.classList.add('hidden');
+                previewIcon.classList.remove('hidden');
             }
         }
 
@@ -542,7 +547,7 @@
 
             let history = JSON.parse(localStorage.getItem('gsd_nota_history') || '[]');
             history.unshift(notaData);
-            if (history.length > 20) history.pop(); // Max 20 items
+            if (history.length > 20) history.pop();
             localStorage.setItem('gsd_nota_history', JSON.stringify(history));
             alert('Nota berhasil disimpan ke riwayat!');
         }
