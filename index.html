@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Generator Nota Otomatis - Supabase & Logo PNG/JPG</title>
+    <title>Aplikasi Generator Nota Otomatis - Auto Logo & Supabase</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold">NotaPro - Generator Nota Pintar</h1>
-                    <p class="text-xs text-indigo-200">Terhubung dengan Supabase & Logo PNG/JPG</p>
+                    <p class="text-xs text-indigo-200">Auto Logo, Supabase & Vercel Ready</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
@@ -125,9 +125,9 @@
                     <!-- Header Nota -->
                     <div class="flex justify-between items-start border-b pb-6">
                         <div class="flex items-center space-x-4">
-                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
-                                <img id="preview-logo-img" src="" alt="Logo" class="w-full h-full object-cover hidden">
-                                <i id="preview-logo-icon" class="fa-solid fa-store text-slate-400 text-xl"></i>
+                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-indigo-100 shadow-sm">
+                                <img id="preview-logo-img" src="" alt="Logo" class="w-full h-full object-cover">
+                                <i id="preview-logo-icon" class="fa-solid fa-store text-indigo-400 text-xl hidden"></i>
                             </div>
                             <div>
                                 <h2 id="preview-store-name" class="text-xl font-bold text-slate-800">Nama Toko Anda</h2>
@@ -211,12 +211,12 @@
         </div>
     </main>
 
-    <!-- Modal Pengaturan Toko & Logo PNG/JPG -->
+    <!-- Modal Pengaturan Toko & Logo -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan Toko & Logo PNG/JPG
+                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan Toko & Logo Otomatis
                 </h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -240,7 +240,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">Upload File Logo (Format: PNG, JPG, JPEG)</label>
+                    <label class="block font-medium text-slate-600 mb-1">Ganti Logo Toko (PNG / JPG / JPEG)</label>
                     <input type="file" id="setting-logo-file" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
                     <p class="text-[10px] text-slate-400 mt-1">Atau masukkan URL logo online di bawah ini:</p>
                     <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1" oninput="updateLogoSync(this.value)">
@@ -290,12 +290,15 @@
             { name: "Maintenance Bulanan Vercel", qty: 2, price: 250000 }
         ];
 
+        // Default logo bawaan otomatis (SVG ikon nota profesional dalam format Data URI)
+        const defaultLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%234f46e5'><rect width='100' height='100' rx='20'/><path d='M30 32h40v9H30zm0 18h40v9H30zm0 18h25v9H30z' fill='white'/></svg>";
+
         let storeConfig = {
             name: "Toko Serba Ada Jaya",
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
             phone: "081234567890",
             city: "Denpasar",
-            logoUrl: "",
+            logoUrl: defaultLogo,
             signer: "Budi Santoso (Kasir)"
         };
 
@@ -364,15 +367,14 @@
         }
 
         function updateLogoSync(url) {
-            storeConfig.logoUrl = url;
+            storeConfig.logoUrl = url || defaultLogo;
             const img = document.getElementById('preview-logo-img');
             const icon = document.getElementById('preview-logo-icon');
-            if (url) {
-                img.src = url;
+            if (storeConfig.logoUrl) {
+                img.src = storeConfig.logoUrl;
                 img.classList.remove('hidden');
                 icon.classList.add('hidden');
             } else {
-                img.src = '';
                 img.classList.add('hidden');
                 icon.classList.remove('hidden');
             }
@@ -414,7 +416,8 @@
             storeConfig.phone = document.getElementById('setting-store-phone').value;
             storeConfig.city = document.getElementById('setting-store-city').value;
             storeConfig.signer = document.getElementById('setting-signer-name').value;
-            storeConfig.logoUrl = document.getElementById('setting-logo-url').value;
+            let customLogo = document.getElementById('setting-logo-url').value.trim();
+            storeConfig.logoUrl = customLogo || defaultLogo;
 
             document.getElementById('preview-store-name').textContent = storeConfig.name;
             document.getElementById('preview-store-address').textContent = storeConfig.address;
