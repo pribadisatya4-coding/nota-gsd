@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Generator Nota Otomatis</title>
+    <title>Aplikasi Generator Nota Otomatis - Supabase & Logo PNG/JPG</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         @media print {
@@ -30,15 +32,15 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold">NotaPro - Generator Nota Pintar</h1>
-                    <p class="text-xs text-indigo-200">Kelola Nota, Toko, & Database GitHub dengan Mudah</p>
+                    <p class="text-xs text-indigo-200">Terhubung dengan Supabase & Logo PNG/JPG</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <button onclick="openGitHubModal()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm font-medium border border-indigo-400 transition flex items-center gap-2">
-                    <i class="fa-brands fa-github"></i> <span id="github-status-text">Koneksi GitHub</span>
+                <button onclick="openSupabaseModal()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-medium border border-emerald-400 transition flex items-center gap-2">
+                    <i class="fa-solid fa-database"></i> <span id="supabase-status-text">Koneksi Supabase</span>
                 </button>
                 <button onclick="openSettingsModal()" class="bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <i class="fa-solid fa-gear"></i> Pengaturan Toko
+                    <i class="fa-solid fa-gear"></i> Pengaturan Toko & Logo
                 </button>
             </div>
         </div>
@@ -109,8 +111,8 @@
 
             <!-- Tombol Aksi -->
             <div class="flex gap-3">
-                <button onclick="saveToGitHub()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke GitHub
+                <button onclick="saveToSupabase()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke Supabase
                 </button>
                 <button onclick="printNota()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-print"></i> Cetak / PDF
@@ -211,12 +213,12 @@
         </div>
     </main>
 
-    <!-- Modal Pengaturan Toko -->
+    <!-- Modal Pengaturan Toko & Logo PNG/JPG -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan & Logo Toko Otomatis
+                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan Toko & Logo PNG/JPG
                 </h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -240,9 +242,10 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">URL Logo Toko / Upload File</label>
-                    <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png atau pilih file" class="w-full border rounded-lg px-3 py-2 mb-2" oninput="updateLogoSync(this.value)">
-                    <input type="file" id="setting-logo-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
+                    <label class="block font-medium text-slate-600 mb-1">Upload File Logo (Format: PNG, JPG, JPEG)</label>
+                    <input type="file" id="setting-logo-file" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
+                    <p class="text-[10px] text-slate-400 mt-1">Atau masukkan URL logo online di bawah ini:</p>
+                    <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1" oninput="updateLogoSync(this.value)">
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">Nama Penandatangan / Kasir</label>
@@ -255,33 +258,29 @@
         </div>
     </div>
 
-    <!-- Modal GitHub Database -->
-    <div id="github-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <!-- Modal Supabase Database -->
+    <div id="supabase-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-brands fa-github text-slate-900"></i> Koneksi Database GitHub
+                    <i class="fa-solid fa-database text-emerald-600"></i> Koneksi Database Supabase
                 </h3>
-                <button onclick="closeGitHubModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeSupabaseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <p class="text-xs text-slate-500">Hubungkan aplikasi dengan repository GitHub Anda untuk menyimpan nota dan riwayat transaksi secara aman tanpa backend terpisah.</p>
+            <p class="text-xs text-slate-500">Masukkan Project URL dan Anon Public API Key dari dashboard Supabase Anda.</p>
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">GitHub Username / Organization</label>
-                    <input type="text" id="gh-owner" placeholder="misal: username" class="w-full border rounded-lg px-3 py-2">
+                    <label class="block font-medium text-slate-600 mb-1">Supabase Project URL</label>
+                    <input type="text" id="sb-url" placeholder="https://xxxxxx.supabase.co" class="w-full border rounded-lg px-3 py-2">
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">Repository Name</label>
-                    <input type="text" id="gh-repo" placeholder="misal: nota-database" class="w-full border rounded-lg px-3 py-2">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Personal Access Token (PAT)</label>
-                    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full border rounded-lg px-3 py-2">
+                    <label class="block font-medium text-slate-600 mb-1">Supabase Anon / Public Key</label>
+                    <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full border rounded-lg px-3 py-2">
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2 border-t">
-                <button onclick="testGitHubConnection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-medium">Uji Koneksi</button>
-                <button onclick="saveGitHubConfig()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-medium">Simpan Konfigurasi</button>
+                <button onclick="testSupabaseConnection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-medium">Uji Koneksi</button>
+                <button onclick="saveSupabaseConfig()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-medium">Simpan Konfigurasi</button>
             </div>
         </div>
     </div>
@@ -302,11 +301,8 @@
             signer: "Budi Santoso (Kasir)"
         };
 
-        let ghConfig = {
-            owner: "",
-            repo: "",
-            token: ""
-        };
+        let sbConfig = { url: "", key: "" };
+        let currentGrandTotal = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('nota-date').valueAsDate = new Date();
@@ -315,15 +311,13 @@
             setupEventListeners();
             calculateTotal();
             
-            // Load saved GitHub config if any
-            const savedGh = localStorage.getItem('gh_config');
-            if(savedGh) {
-                ghConfig = JSON.parse(savedGh);
-                document.getElementById('gh-owner').value = ghConfig.owner;
-                document.getElementById('gh-repo').value = ghConfig.repo;
-                document.getElementById('gh-token').value = ghConfig.token;
-                if(ghConfig.repo) {
-                    document.getElementById('github-status-text').textContent = "Connected (" + ghConfig.repo + ")";
+            const savedSb = localStorage.getItem('sb_config');
+            if(savedSb) {
+                sbConfig = JSON.parse(savedSb);
+                document.getElementById('sb-url').value = sbConfig.url;
+                document.getElementById('sb-key').value = sbConfig.key;
+                if(sbConfig.url) {
+                    document.getElementById('supabase-status-text').textContent = "Supabase Connected";
                 }
             }
         });
@@ -389,6 +383,13 @@
         function handleLogoUpload(event) {
             const file = event.target.files[0];
             if (file) {
+                // Validasi format PNG atau JPG/JPEG
+                const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Format file harus berupa PNG, JPG, atau JPEG!');
+                    event.target.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('setting-logo-url').value = e.target.result;
@@ -426,91 +427,64 @@
             updateLogoSync(storeConfig.logoUrl);
         }
 
-        function openGitHubModal() { document.getElementById('github-modal').classList.remove('hidden'); }
-        function closeGitHubModal() { document.getElementById('github-modal').classList.add('hidden'); }
+        function openSupabaseModal() { document.getElementById('supabase-modal').classList.remove('hidden'); }
+        function closeSupabaseModal() { document.getElementById('supabase-modal').classList.add('hidden'); }
 
-        function saveGitHubConfig() {
-            ghConfig.owner = document.getElementById('gh-owner').value;
-            ghConfig.repo = document.getElementById('gh-repo').value;
-            ghConfig.token = document.getElementById('gh-token').value;
-            localStorage.setItem('gh_config', JSON.stringify(ghConfig));
-            alert('Konfigurasi GitHub berhasil disimpan!');
-            closeGitHubModal();
-            document.getElementById('github-status-text').textContent = ghConfig.repo ? "Connected (" + ghConfig.repo + ")" : "Koneksi GitHub";
+        function saveSupabaseConfig() {
+            sbConfig.url = document.getElementById('sb-url').value.trim();
+            sbConfig.key = document.getElementById('sb-key').value.trim();
+            localStorage.setItem('sb_config', JSON.stringify(sbConfig));
+            alert('Konfigurasi Supabase berhasil disimpan!');
+            closeSupabaseModal();
+            document.getElementById('supabase-status-text').textContent = sbConfig.url ? "Supabase Connected" : "Koneksi Supabase";
         }
 
-        async function testGitHubConnection() {
-            const owner = document.getElementById('gh-owner').value;
-            const repo = document.getElementById('gh-repo').value;
-            const token = document.getElementById('gh-token').value;
-            if(!owner || !repo || !token) { alert('Semua field GitHub harus diisi!'); return; }
+        async function testSupabaseConnection() {
+            const url = document.getElementById('sb-url').value.trim();
+            const key = document.getElementById('sb-key').value.trim();
+            if(!url || !key) { alert('URL dan Key harus diisi!'); return; }
             try {
-                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                if(res.ok) alert('Koneksi ke GitHub Berhasil!');
-                else alert('Gagal terhubung: Pastikan Token & Repository valid.');
+                const sbClient = supabase.createClient(url, key);
+                const { data, error } = await sbClient.from('notas').select('id').limit(1);
+                if(error) throw error;
+                alert('Koneksi ke Supabase Berhasil!');
             } catch(e) {
-                alert('Terjadi kesalahan koneksi.');
+                alert('Gagal terhubung ke Supabase: ' + (e.message || 'Pastikan URL, Key, dan tabel notas sudah benar.'));
             }
         }
 
-        async function saveToGitHub() {
-            const savedGh = JSON.parse(localStorage.getItem('gh_config'));
-            if(!savedGh || !savedGh.token || !savedGh.repo || !savedGh.owner) {
-                alert('Harap atur koneksi GitHub terlebih dahulu melalui tombol Koneksi GitHub.');
-                openGitHubModal();
+        async function saveToSupabase() {
+            const savedSb = JSON.parse(localStorage.getItem('sb_config'));
+            if(!savedSb || !savedSb.url || !savedSb.key) {
+                alert('Harap atur koneksi Supabase terlebih dahulu melalui tombol Koneksi Supabase.');
+                openSupabaseModal();
                 return;
             }
 
+            const sbClient = supabase.createClient(savedSb.url, savedSb.key);
+
             const notaData = {
-                notaNumber: document.getElementById('nota-number').value,
+                nota_number: document.getElementById('nota-number').value,
                 date: document.getElementById('nota-date').value,
-                customer: document.getElementById('customer-name').value,
-                address: document.getElementById('customer-address').value,
+                customer_name: document.getElementById('customer-name').value,
+                customer_address: document.getElementById('customer-address').value,
                 items: items,
-                store: storeConfig,
-                timestamp: new Date().toISOString()
+                store_config: storeConfig,
+                grand_total: currentGrandTotal
             };
 
-            const fileName = `notas/${notaData.notaNumber.replace(/[\/\:]/g, '_')}.json`;
-            const contentBytes = new TextEncoder().encode(JSON.stringify(notaData, null, 2));
-            let base64Content = btoa(String.fromCharCode.apply(null, contentBytes));
-
-            let sha = '';
             try {
-                const checkRes = await fetch(`https://api.github.com/repos/${savedGh.owner}/${savedGh.repo}/contents/${fileName}`, {
-                    headers: { 'Authorization': `token ${savedGh.token}` }
-                });
-                if(checkRes.ok) {
-                    const fileData = await checkRes.json();
-                    sha = fileData.sha;
-                }
-            } catch(e) {}
+                const { data, error } = await sbClient
+                    .from('notas')
+                    .upsert(notaData, { onConflict: 'nota_number' });
 
-            const bodyData = {
-                message: `Add/Update nota ${notaData.notaNumber}`,
-                content: base64Content
-            };
-            if(sha) bodyData.sha = sha;
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${savedGh.owner}/${savedGh.repo}/contents/${fileName}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${savedGh.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bodyData)
-                });
-                if(res.ok) {
-                    alert('Nota berhasil disimpan ke Database GitHub!');
+                if(error) {
+                    alert('Gagal menyimpan ke Supabase: ' + error.message);
                 } else {
-                    const err = await res.json();
-                    alert('Gagal menyimpan ke GitHub: ' + (err.message || 'Unknown error'));
+                    alert('Nota & logo berhasil disimpan ke Database Supabase!');
                 }
             } catch(e) {
-                alert('Terjadi kesalahan jaringan saat menyimpan ke GitHub.');
+                alert('Terjadi kesalahan jaringan saat menyimpan ke Supabase.');
             }
         }
 
@@ -548,14 +522,14 @@
             const discountAmount = (subtotal * discPct) / 100;
             const afterDiscount = subtotal - discountAmount;
             const taxAmount = (afterDiscount * taxPct) / 100;
-            const grandTotal = afterDiscount + taxAmount;
+            currentGrandTotal = afterDiscount + taxAmount;
 
             document.getElementById('preview-subtotal').textContent = "Rp " + subtotal.toLocaleString('id-ID');
             document.getElementById('preview-disc-val').textContent = discPct;
             document.getElementById('preview-discount-amount').textContent = "- Rp " + discountAmount.toLocaleString('id-ID');
             document.getElementById('preview-tax-val').textContent = taxPct;
             document.getElementById('preview-tax-amount').textContent = "Rp " + taxAmount.toLocaleString('id-ID');
-            document.getElementById('preview-grand-total').textContent = "Rp " + grandTotal.toLocaleString('id-ID');
+            document.getElementById('preview-grand-total').textContent = "Rp " + currentGrandTotal.toLocaleString('id-ID');
         }
 
         function printNota() {
