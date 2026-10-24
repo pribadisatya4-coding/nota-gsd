@@ -29,7 +29,6 @@
     <header class="bg-indigo-700 text-white shadow-md no-print">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <!-- Kotak putih di header dihilangkan (menggunakan rounded-lg overflow-hidden tanpa bg-white & shadow) -->
                 <div id="header-logo-box" class="rounded-lg text-white font-bold text-xl w-12 h-12 flex items-center justify-center overflow-hidden flex-shrink-0">
                     <i id="header-logo-icon" class="fa-solid fa-receipt"></i>
                 </div>
@@ -366,14 +365,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             const dateEl = document.getElementById('nota-date');
             if (dateEl) dateEl.valueAsDate = new Date();
-            generateAutoNotaNumber();
+            initOrLoadNotaNumber();
             loadConfigToUI();
             renderItems();
             setupEventListeners();
             calculateTotal();
         });
 
-        function generateAutoNotaNumber() {
+        // Mengambil nomor nota aktif saat ini tanpa mengubahnya terus menerus
+        function initOrLoadNotaNumber() {
+            let lastSeq = localStorage.getItem('gsd_nota_seq');
+            if (!lastSeq) {
+                lastSeq = 1;
+                localStorage.setItem('gsd_nota_seq', lastSeq);
+            }
+            const paddedSeq = String(lastSeq).padStart(3, '0');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const notaInput = document.getElementById('nota-number');
+            if(notaInput && !notaInput.value) {
+                notaInput.value = `GSD/${year}/${month}/${paddedSeq}`;
+            }
+        }
+
+        // Membuat nomor nota baru untuk transaksi berikutnya setelah disimpan/reset
+        function generateNextNotaNumber() {
             let lastSeq = Number(localStorage.getItem('gsd_nota_seq') || '0') + 1;
             localStorage.setItem('gsd_nota_seq', lastSeq);
             const paddedSeq = String(lastSeq).padStart(3, '0');
@@ -674,6 +691,8 @@
                 alert('Gagal menyimpan ke Supabase: ' + error.message);
             } else {
                 alert('Nota berhasil disimpan ke database Supabase!');
+                // Setelah berhasil disimpan, nomor nota otomatis maju ke nomor berikutnya untuk transaksi baru
+                generateNextNotaNumber();
             }
         }
 
@@ -731,7 +750,7 @@
 
         function resetForm() {
             if(confirm('Reset semua input form nota?')) {
-                generateAutoNotaNumber();
+                generateNextNotaNumber();
                 const custName = document.getElementById('customer-name');
                 const custPhone = document.getElementById('customer-phone');
                 const custAddr = document.getElementById('customer-address');
