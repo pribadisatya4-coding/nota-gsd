@@ -334,13 +334,14 @@
         const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         
-        let supabase = null;
+        // Menggunakan variabel sbClient agar tidak bentrok dengan keyword global dari CDN
+        let sbClient = null;
         try {
             if (window.supabase && SUPABASE_URL !== 'https://YOUR_PROJECT_ID.supabase.co') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
         } catch (e) {
-            console.warn('Supabase not fully initialized yet.');
+            console.warn('Supabase initialization warning:', e);
         }
 
         let items = [];
@@ -625,10 +626,10 @@
         }
 
         // ==========================================
-        // FUNGSI SUPABASE & RIWAYAT
+        // FUNGSI SUPABASE & RIWAYAT (Menggunakan sbClient)
         // ==========================================
         async function saveCurrentNota() {
-            if (!supabase) {
+            if (!sbClient) {
                 alert('Supabase belum dikonfigurasi! Masukkan SUPABASE_URL dan SUPABASE_ANON_KEY terlebih dahulu pada kode script.');
                 return;
             }
@@ -652,7 +653,7 @@
                 grand_total: currentGrandTotal
             };
 
-            const { data, error } = await supabase
+            const { data, error } = await sbClient
                 .from('receipts')
                 .insert([notaData]);
 
@@ -671,14 +672,14 @@
             const listContainer = document.getElementById('history-list');
             if(!listContainer) return;
 
-            if (!supabase) {
+            if (!sbClient) {
                 listContainer.innerHTML = `<p class="text-rose-500 text-center py-4">Supabase belum dikonfigurasi pada file script.</p>`;
                 return;
             }
 
             listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data dari Supabase...</p>`;
 
-            const { data, error } = await supabase
+            const { data, error } = await sbClient
                 .from('receipts')
                 .select('*')
                 .order('created_at', { ascending: false });
