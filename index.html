@@ -249,7 +249,7 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan Toko & Logo Otomatis
+                    <i class="fa-solid fa-store text-indigo-600"></i> Pengaturan Toko & Logo
                 </h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -273,10 +273,9 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">Ganti Logo Toko (PNG/JPG)</label>
-                    <input type="file" id="setting-logo-file" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
-                    <p class="text-[10px] text-slate-400 mt-1">Atau masukkan URL logo online:</p>
-                    <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1">
+                    <label class="block font-medium text-slate-600 mb-1">URL Logo di GitHub / Online</label>
+                    <input type="text" id="setting-logo-url" placeholder="logo.png atau https://..." class="w-full border rounded-lg px-3 py-2 mt-1">
+                    <p class="text-[10px] text-slate-400 mt-1">Gunakan nama file di repo GitHub (cth: <code>logo.png</code>)</p>
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">Nama Penandatangan / Kasir</label>
@@ -312,13 +311,13 @@
     <script>
         let items = [];
 
-        // Load store config dari localStorage secara otomatis jika ada
+        // Konfigurasi default mengarah ke file "logo.png" di GitHub repo Anda
         let storeConfig = JSON.parse(localStorage.getItem('gsd_store_config')) || {
             name: "GSD CUSTOM",
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
             phone: "081234567890",
             city: "Denpasar",
-            logoUrl: "",
+            logoUrl: "logo.png",
             signer: "Budi Santoso (Kasir)"
         };
 
@@ -405,18 +404,6 @@
             }
         }
 
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('setting-logo-url').value = e.target.result;
-                    updateLogoSync(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
         function loadConfigToUI() {
             document.getElementById('setting-store-name').value = storeConfig.name;
             document.getElementById('setting-store-address').value = storeConfig.address;
@@ -425,7 +412,6 @@
             document.getElementById('setting-logo-url').value = storeConfig.logoUrl;
             document.getElementById('setting-signer-name').value = storeConfig.signer;
 
-            // Update Labels & Preview elements automatically
             document.getElementById('header-store-title').textContent = storeConfig.name;
             document.getElementById('dashboard-store-name-label').textContent = storeConfig.name;
             document.getElementById('preview-store-name').textContent = storeConfig.name;
@@ -450,7 +436,6 @@
             const customUrl = document.getElementById('setting-logo-url').value.trim();
             storeConfig.logoUrl = customUrl;
 
-            // Simpan otomatis ke localStorage agar tetap ada saat halaman direfresh
             localStorage.setItem('gsd_store_config', JSON.stringify(storeConfig));
 
             loadConfigToUI();
