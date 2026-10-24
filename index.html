@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf CDN for direct PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         @media print {
@@ -30,12 +34,12 @@
                 </div>
                 <div>
                     <h1 id="header-store-title" class="text-xl font-bold">GSD CUSTOM</h1>
-                    <p class="text-xs text-indigo-200">Buat Nota Otomatis, Cetak, WhatsApp & Download PDF</p>
+                    <p class="text-xs text-indigo-200">Supabase Database Connected • Cetak, WhatsApp & PDF</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="openHistoryModal()" class="bg-indigo-600 hover:bg-indigo-800 text-white px-3 py-2 rounded-lg text-xs font-medium transition flex items-center gap-1.5 border border-indigo-500">
-                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Nota
+                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Nota (Cloud)
                 </button>
                 <button onclick="openSettingsModal()" class="bg-white text-indigo-700 hover:bg-indigo-50 px-3 py-2 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-gear"></i> Pengaturan Toko
@@ -69,16 +73,26 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">No. Nota</label>
-                            <input type="text" id="nota-number" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" value="GSD/2026/10/001">
+                            <input type="text" id="nota-number" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Tanggal</label>
                             <input type="date" id="nota-date" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Kepada (Nama Pelanggan)</label>
-                        <input type="text" id="customer-name" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Nama Pelanggan / Perusahaan">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Kepada (Nama Pelanggan)</label>
+                            <input type="text" id="customer-name" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Nama Pelanggan">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Status Pembayaran</label>
+                            <select id="payment-status" onchange="calculateTotal()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                                <option value="LUNAS / BERHASIL">LUNAS / BERHASIL</option>
+                                <option value="BELUM LUNAS">BELUM LUNAS</option>
+                                <option value="DP (DOWN PAYMENT)">DP (DOWN PAYMENT)</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1">No. WhatsApp Pelanggan (Opsional)</label>
@@ -125,15 +139,20 @@
 
             <!-- Tombol Aksi -->
             <div class="space-y-2.5">
-                <button onclick="printNota()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-print"></i> Cetak Nota / Download PDF (A4)
-                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="downloadPDF()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-3 rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i> Download PDF
+                    </button>
+                    <button onclick="printNota()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-3 px-3 rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Cetak Nota
+                    </button>
+                </div>
                 <button onclick="sendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp text-lg"></i> Kirim Rincian via WhatsApp
                 </button>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="saveCurrentNota()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-floppy-disk"></i> Simpan ke Riwayat
+                    <button onclick="saveCurrentNota()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 border border-indigo-200">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke Supabase
                     </button>
                     <button onclick="resetForm()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-rotate-right"></i> Reset Form
@@ -184,7 +203,7 @@
                         </div>
                         <div class="text-right">
                             <span class="text-slate-400 block font-medium uppercase tracking-wider mb-1">Status Pembayaran:</span>
-                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px]">LUNAS / BERHASIL</span>
+                            <span id="preview-payment-status" class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px]">LUNAS / BERHASIL</span>
                         </div>
                     </div>
 
@@ -288,30 +307,36 @@
         </div>
     </div>
 
-    <!-- Modal Riwayat Nota -->
+    <!-- Modal Riwayat Nota (Supabase Cloud) -->
     <div id="history-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-indigo-600"></i> Riwayat Nota Tersimpan
+                    <i class="fa-solid fa-cloud text-indigo-600"></i> Riwayat Nota Tersimpan di Supabase
                 </h3>
                 <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <div id="history-list" class="space-y-2 max-h-96 overflow-y-auto text-xs">
-                <!-- List riwayat nota -->
+            <div id="history-list" class="space-y-2 max-h-96 overflow-y-auto text-xs pr-1">
+                <p class="text-slate-400 text-center py-4">Memuat data dari Supabase...</p>
             </div>
             <div class="flex justify-between items-center pt-2 border-t text-xs">
-                <button onclick="clearHistory()" class="text-rose-600 hover:underline">Hapus Semua Riwayat</button>
+                <span class="text-slate-400">Data diambil secara real-time dari database Supabase</span>
                 <button onclick="closeHistoryModal()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Logic & Supabase Integration -->
     <script>
-        let items = [];
+        // ==========================================
+        // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
+        // ==========================================
+        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Konfigurasi default mengarah ke file "logo.png" di GitHub repo Anda
+        let items = [];
         let storeConfig = JSON.parse(localStorage.getItem('gsd_store_config')) || {
             name: "GSD CUSTOM",
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
@@ -322,15 +347,29 @@
         };
 
         let currentGrandTotal = 0;
+        let currentSubtotal = 0;
+        let currentDiscountAmount = 0;
+        let currentTaxAmount = 0;
         let currentPrintMode = 'a4';
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('nota-date').valueAsDate = new Date();
+            generateAutoNotaNumber();
             loadConfigToUI();
             renderItems();
             setupEventListeners();
             calculateTotal();
         });
+
+        function generateAutoNotaNumber() {
+            let lastSeq = Number(localStorage.getItem('gsd_nota_seq') || '0') + 1;
+            localStorage.setItem('gsd_nota_seq', lastSeq);
+            const paddedSeq = String(lastSeq).padStart(3, '0');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('nota-number').value = `GSD/${year}/${month}/${paddedSeq}`;
+        }
 
         function setupEventListeners() {
             const inputs = ['nota-number', 'nota-date', 'customer-name', 'customer-phone', 'customer-address', 'discount-percent', 'tax-percent'];
@@ -383,7 +422,6 @@
 
         function updateLogoSync(url) {
             storeConfig.logoUrl = url;
-            
             const headerBox = document.getElementById('header-logo-box');
             const dashBox = document.getElementById('dashboard-logo-box');
             const previewImg = document.getElementById('preview-logo-img');
@@ -437,7 +475,6 @@
             storeConfig.logoUrl = customUrl;
 
             localStorage.setItem('gsd_store_config', JSON.stringify(storeConfig));
-
             loadConfigToUI();
         }
 
@@ -446,6 +483,7 @@
             const notaDate = document.getElementById('nota-date').value;
             const custName = document.getElementById('customer-name').value || 'Nama Pelanggan';
             const custAddr = document.getElementById('customer-address').value || 'Alamat Pelanggan';
+            const paymentStatus = document.getElementById('payment-status').value;
             const discPct = Number(document.getElementById('discount-percent').value) || 0;
             const taxPct = Number(document.getElementById('tax-percent').value) || 0;
 
@@ -453,14 +491,24 @@
             document.getElementById('preview-nota-date').textContent = "Tanggal: " + notaDate;
             document.getElementById('preview-customer-name').textContent = custName;
             document.getElementById('preview-customer-address').textContent = custAddr;
+            
+            const badge = document.getElementById('preview-payment-status');
+            badge.textContent = paymentStatus;
+            if(paymentStatus.includes('LUNAS')) {
+                badge.className = "px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px]";
+            } else if(paymentStatus.includes('DP')) {
+                badge.className = "px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]";
+            } else {
+                badge.className = "px-2.5 py-1 bg-rose-100 text-rose-700 rounded-full font-bold text-[10px]";
+            }
 
-            let subtotal = 0;
+            currentSubtotal = 0;
             const tableBody = document.getElementById('preview-items-table');
             tableBody.innerHTML = '';
 
             items.forEach((item, idx) => {
                 const itemSubtotal = item.qty * item.price;
-                subtotal += itemSubtotal;
+                currentSubtotal += itemSubtotal;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="py-2 px-2">${idx + 1}</td>
@@ -472,16 +520,16 @@
                 tableBody.appendChild(tr);
             });
 
-            const discountAmount = (subtotal * discPct) / 100;
-            const afterDiscount = subtotal - discountAmount;
-            const taxAmount = (afterDiscount * taxPct) / 100;
-            currentGrandTotal = afterDiscount + taxAmount;
+            currentDiscountAmount = (currentSubtotal * discPct) / 100;
+            const afterDiscount = currentSubtotal - currentDiscountAmount;
+            currentTaxAmount = (afterDiscount * taxPct) / 100;
+            currentGrandTotal = afterDiscount + currentTaxAmount;
 
-            document.getElementById('preview-subtotal').textContent = "Rp " + subtotal.toLocaleString('id-ID');
+            document.getElementById('preview-subtotal').textContent = "Rp " + currentSubtotal.toLocaleString('id-ID');
             document.getElementById('preview-disc-val').textContent = discPct;
-            document.getElementById('preview-discount-amount').textContent = "- Rp " + discountAmount.toLocaleString('id-ID');
+            document.getElementById('preview-discount-amount').textContent = "- Rp " + currentDiscountAmount.toLocaleString('id-ID');
             document.getElementById('preview-tax-val').textContent = taxPct;
-            document.getElementById('preview-tax-amount').textContent = "Rp " + taxAmount.toLocaleString('id-ID');
+            document.getElementById('preview-tax-amount').textContent = "Rp " + currentTaxAmount.toLocaleString('id-ID');
             document.getElementById('preview-grand-total').textContent = "Rp " + currentGrandTotal.toLocaleString('id-ID');
         }
 
@@ -503,11 +551,25 @@
             }
         }
 
+        function downloadPDF() {
+            const element = document.getElementById('printable-area');
+            const notaNum = document.getElementById('nota-number').value.replace(/\//g, '-');
+            const opt = {
+                margin:       10,
+                filename:     `Nota-${notaNum}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
         function sendWhatsApp() {
             const custName = document.getElementById('customer-name').value || 'Pelanggan';
             const custPhone = document.getElementById('customer-phone').value.trim();
             const notaNum = document.getElementById('nota-number').value;
             const notaDate = document.getElementById('nota-date').value;
+            const paymentStatus = document.getElementById('payment-status').value;
 
             let text = `Halo *${custName}*, terima kasih telah berbelanja di *${storeConfig.name}*.\n\n`;
             text += `Berikut adalah rincian nota Anda:\n`;
@@ -519,66 +581,93 @@
             });
 
             text += `\n*Total Akhir: Rp ${currentGrandTotal.toLocaleString('id-ID')}*\n`;
-            text += `Status Pembayaran: *LUNAS*\n\n`;
+            text += `Status: *${paymentStatus}*\n\n`;
             text += `Terima kasih atas kepercayaan Anda! 🙏`;
 
             let waUrl = `https://wa.me/${custPhone}?text=${encodeURIComponent(text)}`;
             window.open(waUrl, '_blank');
         }
 
-        function saveCurrentNota() {
+        // ==========================================
+        // FUNGSI SUPABASE: SIMPAN & AMBIL RIWAYAT
+        // ==========================================
+        async function saveCurrentNota() {
+            if (items.length === 0) {
+                alert('Tambahkan minimal 1 item barang sebelum menyimpan!');
+                return;
+            }
+
             const notaData = {
-                number: document.getElementById('nota-number').value,
-                date: document.getElementById('nota-date').value,
-                customer: document.getElementById('customer-name').value || 'Umum',
-                total: currentGrandTotal,
-                itemsCount: items.length
+                nota_number: document.getElementById('nota-number').value,
+                nota_date: document.getElementById('nota-date').value,
+                customer_name: document.getElementById('customer-name').value || 'Umum',
+                customer_phone: document.getElementById('customer-phone').value || '',
+                customer_address: document.getElementById('customer-address').value || '',
+                payment_status: document.getElementById('payment-status').value,
+                items: items,
+                subtotal: currentSubtotal,
+                discount_amount: currentDiscountAmount,
+                tax_amount: currentTaxAmount,
+                grand_total: currentGrandTotal
             };
 
-            let history = JSON.parse(localStorage.getItem('gsd_nota_history') || '[]');
-            history.unshift(notaData);
-            if (history.length > 20) history.pop();
-            localStorage.setItem('gsd_nota_history', JSON.stringify(history));
-            alert('Nota berhasil disimpan ke riwayat!');
+            const { data, error } = await supabase
+                .from('receipts')
+                .insert([notaData]);
+
+            if (error) {
+                console.error('Error saving to Supabase:', error);
+                alert('Gagal menyimpan ke Supabase: ' + error.message);
+            } else {
+                alert('Nota berhasil disimpan ke database Supabase!');
+            }
         }
 
-        function openHistoryModal() {
+        async function openHistoryModal() {
+            document.getElementById('history-modal').classList.remove('hidden');
             const listContainer = document.getElementById('history-list');
-            let history = JSON.parse(localStorage.getItem('gsd_nota_history') || '[]');
-            
+            listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data dari Supabase...</p>`;
+
+            const { data, error } = await supabase
+                .from('receipts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching history:', error);
+                listContainer.innerHTML = `<p class="text-rose-500 text-center py-4">Gagal memuat data: ${error.message}</p>`;
+                return;
+            }
+
             listContainer.innerHTML = '';
-            if (history.length === 0) {
-                listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">Belum ada riwayat nota tersimpan.</p>`;
+            if (!data || data.length === 0) {
+                listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">Belum ada riwayat nota di database.</p>";
             } else {
-                history.forEach((h, idx) => {
+                data.forEach((h) => {
                     const div = document.createElement('div');
-                    div.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200";
+                    div.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-slate-100 transition";
                     div.innerHTML = `
                         <div>
-                            <strong>${h.number}</strong> - ${h.customer}<br>
-                            <span class="text-slate-400">${h.date} (${h.itemsCount} item)</span>
+                            <strong class="text-indigo-700">${h.nota_number}</strong> - ${h.customer_name}<br>
+                            <span class="text-slate-400 text-[11px]">${h.nota_date} (${h.payment_status})</span>
                         </div>
                         <div class="text-right">
-                            <span class="font-bold text-indigo-600 block">Rp ${h.total.toLocaleString('id-ID')}</span>
+                            <span class="font-bold text-slate-800 block">Rp ${Number(h.grand_total).toLocaleString('id-ID')}</span>
+                            <span class="text-[10px] text-slate-400">${new Date(h.created_at).toLocaleString('id-ID')}</span>
                         </div>
                     `;
                     listContainer.appendChild(div);
                 });
             }
-            document.getElementById('history-modal').classList.remove('hidden');
         }
 
-        function closeHistoryModal() { document.getElementById('history-modal').classList.add('hidden'); }
-        function clearHistory() {
-            if(confirm('Hapus semua riwayat nota?')) {
-                localStorage.removeItem('gsd_nota_history');
-                openHistoryModal();
-            }
+        function closeHistoryModal() { 
+            document.getElementById('history-modal').classList.add('hidden'); 
         }
 
         function resetForm() {
             if(confirm('Reset semua input form nota?')) {
-                document.getElementById('nota-number').value = 'GSD/2026/10/' + Math.floor(Math.random() * 900 + 100);
+                generateAutoNotaNumber();
                 document.getElementById('customer-name').value = '';
                 document.getElementById('customer-phone').value = '';
                 document.getElementById('customer-address').value = '';
