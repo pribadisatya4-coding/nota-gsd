@@ -47,10 +47,10 @@
                     <button onclick="openSettingsModal()" class="text-xs text-indigo-600 hover:underline flex items-center gap-1 font-medium"><i class="fa-solid fa-gear"></i> Pengaturan Toko & Logo</button>
                 </h2>
                 
-                <!-- Dashboard Logo Indicator -->
+                <!-- Dashboard Logo Indicator (Auto-Filled in src) -->
                 <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
                     <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-slate-200 flex-shrink-0">
-                        <img id="dashboard-logo-img" src="" alt="Logo Toko" class="w-full h-full object-cover">
+                        <img id="dashboard-logo-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+" alt="Logo Toko" class="w-full h-full object-cover">
                     </div>
                     <div class="overflow-hidden">
                         <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Logo Aktif Otomatis</span>
@@ -128,7 +128,8 @@
                     <div class="flex justify-between items-start border-b pb-6">
                         <div class="flex items-center space-x-4">
                             <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-slate-200">
-                                <img id="preview-logo-img" src="" alt="Logo" class="w-full h-full object-cover">
+                                <!-- Pre-filled src for automatic loading -->
+                                <img id="preview-logo-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+" alt="Logo" class="w-full h-full object-cover">
                                 <i id="preview-logo-icon" class="fa-solid fa-store text-indigo-500 text-xl hidden"></i>
                             </div>
                             <div>
@@ -260,7 +261,7 @@
 
     <!-- JavaScript Logic -->
     <script>
-        const defaultLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRo dD0iTTMwIDQ1IEw1MCAzMCBMNzAgNDUgTDcwIDcwIEwzMCA3MCBaIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNNTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc=";
+        const defaultLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc=";
 
         let items = [
             { name: "Jasa Konsultasi & Setup Sistem", qty: 1, price: 1500000 },
@@ -333,11 +334,9 @@
             const finalUrl = url.trim() ? url : defaultLogo;
             storeConfig.logoUrl = finalUrl;
             
-            // Sinkronisasi otomatis ke dashboard kiri
             const dashImg = document.getElementById('dashboard-logo-img');
             if(dashImg) dashImg.src = finalUrl;
 
-            // Sinkronisasi otomatis ke preview nota kanan
             const img = document.getElementById('preview-logo-img');
             const icon = document.getElementById('preview-logo-icon');
             if (finalUrl) {
