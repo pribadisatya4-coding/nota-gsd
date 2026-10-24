@@ -152,7 +152,7 @@
                 </button>
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="saveCurrentNota()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 border border-indigo-200">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke Supabase
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Simpan Nota
                     </button>
                     <button onclick="resetForm()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-rotate-right"></i> Reset Form
@@ -331,10 +331,9 @@
         // ==========================================
         // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
         // ==========================================
-        const SUPABASE_URL = 'https://edcynjxgcrbemaxrrofg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkY3luanhnY3JiZW1heHJyb2ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3OTQ4MTcsImV4cCI6MjEwODM3MDgxN30.UvKZ-SDpWW9EqMQR1C00RVki9tX9SNnn-5vgaSIEJRg';
+        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         
-        // Menggunakan variabel sbClient agar tidak bentrok dengan keyword global dari CDN
         let sbClient = null;
         try {
             if (window.supabase && SUPABASE_URL !== 'https://YOUR_PROJECT_ID.supabase.co') {
