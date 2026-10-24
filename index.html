@@ -47,10 +47,10 @@
                     <button onclick="openSettingsModal()" class="text-xs text-indigo-600 hover:underline flex items-center gap-1 font-medium"><i class="fa-solid fa-gear"></i> Pengaturan Toko & Logo</button>
                 </h2>
                 
-                <!-- Dashboard Logo Indicator (Auto-Filled in src) -->
+                <!-- Dashboard Logo Indicator (Robust Icon Badge) -->
                 <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-slate-200 flex-shrink-0">
-                        <img id="dashboard-logo-img" src="data:https://drive.google.com/drive/folders/1DF75ShfJKUoAtaj3UuS01Evza7SpWjA1?usp=sharing" alt="Logo Toko" class="w-full h-full object-cover">
+                    <div id="dashboard-logo-box" class="w-12 h-12 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-inner flex-shrink-0 text-xl">
+                        <i class="fa-solid fa-store"></i>
                     </div>
                     <div class="overflow-hidden">
                         <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Logo Aktif Otomatis</span>
@@ -127,10 +127,9 @@
                     <!-- Header Nota -->
                     <div class="flex justify-between items-start border-b pb-6">
                         <div class="flex items-center space-x-4">
-                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-slate-200">
-                                <!-- Pre-filled src for automatic loading -->
-                                <img id="preview-logo-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+" alt="Logo" class="w-full h-full object-cover">
-                                <i id="preview-logo-icon" class="fa-solid fa-store text-indigo-500 text-xl hidden"></i>
+                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-600 text-white flex items-center justify-center overflow-hidden shadow-sm flex-shrink-0 text-2xl">
+                                <i id="preview-logo-icon" class="fa-solid fa-store"></i>
+                                <img id="preview-logo-img" src="" alt="Logo" class="w-full h-full object-cover hidden">
                             </div>
                             <div>
                                 <h2 id="preview-store-name" class="text-xl font-bold text-slate-800">Nama Toko Anda</h2>
@@ -246,7 +245,7 @@
                     <label class="block font-medium text-slate-600 mb-1">Ganti Logo Toko (Opsional / PNG/JPG)</label>
                     <input type="file" id="setting-logo-file" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
                     <p class="text-[10px] text-slate-400 mt-1">Atau masukkan URL logo online di bawah ini:</p>
-                    <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1" oninput="updateLogoSync(this.value)">
+                    <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1">
                 </div>
                 <div>
                     <label class="block font-medium text-slate-600 mb-1">Nama Penandatangan / Kasir</label>
@@ -261,8 +260,6 @@
 
     <!-- JavaScript Logic -->
     <script>
-        const defaultLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc=";
-
         let items = [
             { name: "Jasa Konsultasi & Setup Sistem", qty: 1, price: 1500000 },
             { name: "Maintenance Bulanan Vercel", qty: 2, price: 250000 }
@@ -273,7 +270,7 @@
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
             phone: "081234567890",
             city: "Denpasar",
-            logoUrl: defaultLogo,
+            logoUrl: "",
             signer: "Budi Santoso (Kasir)"
         };
 
@@ -331,19 +328,24 @@
         }
 
         function updateLogoSync(url) {
-            const finalUrl = url.trim() ? url : defaultLogo;
-            storeConfig.logoUrl = finalUrl;
+            storeConfig.logoUrl = url;
             
-            const dashImg = document.getElementById('dashboard-logo-img');
-            if(dashImg) dashImg.src = finalUrl;
-
+            const dashBox = document.getElementById('dashboard-logo-box');
             const img = document.getElementById('preview-logo-img');
             const icon = document.getElementById('preview-logo-icon');
-            if (finalUrl) {
-                img.src = finalUrl;
+
+            if (url.trim()) {
+                // Jika ada gambar kustom (URL / Upload)
+                dashBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
+                
+                img.src = url;
                 img.classList.remove('hidden');
                 icon.classList.add('hidden');
             } else {
+                // Jika kosong, gunakan logo ikon otomatis bawaan
+                dashBox.innerHTML = `<i class="fa-solid fa-store"></i>`;
+                
+                img.src = '';
                 img.classList.add('hidden');
                 icon.classList.remove('hidden');
             }
@@ -372,7 +374,7 @@
             document.getElementById('setting-store-address').value = storeConfig.address;
             document.getElementById('setting-store-phone').value = storeConfig.phone;
             document.getElementById('setting-store-city').value = storeConfig.city;
-            document.getElementById('setting-logo-url').value = storeConfig.logoUrl === defaultLogo ? '' : storeConfig.logoUrl;
+            document.getElementById('setting-logo-url').value = storeConfig.logoUrl;
             document.getElementById('setting-signer-name').value = storeConfig.signer;
             document.getElementById('dashboard-store-name-label').textContent = storeConfig.name;
             updateLogoSync(storeConfig.logoUrl);
