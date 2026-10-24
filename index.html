@@ -29,7 +29,7 @@
                     <i id="header-logo-icon" class="fa-solid fa-receipt"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold">GSD CUSTOM</h1>
+                    <h1 id="header-store-title" class="text-xl font-bold">GSD CUSTOM</h1>
                     <p class="text-xs text-indigo-200">Buat Nota Otomatis, Cetak, WhatsApp & Download PDF</p>
                 </div>
             </div>
@@ -232,7 +232,7 @@
                     <div class="border-t pt-6 flex justify-between items-end text-xs text-slate-500">
                         <div>
                             <p class="font-semibold text-slate-700">Catatan:</p>
-                            <p class="mt-1 text-[11px]">Terima kasih atas kepercayaan Anda berbelanja di GSD CUSTOM.</p>
+                            <p class="mt-1 text-[11px]">Terima kasih atas kepercayaan Anda berbelanja.</p>
                         </div>
                         <div class="text-center">
                             <p class="mb-12" id="preview-store-city">Denpasar,</p>
@@ -310,10 +310,10 @@
 
     <!-- JavaScript Logic -->
     <script>
-        // Daftar barang dimulai kosong (tanpa item demo)
         let items = [];
 
-        let storeConfig = {
+        // Load store config dari localStorage secara otomatis jika ada
+        let storeConfig = JSON.parse(localStorage.getItem('gsd_store_config')) || {
             name: "GSD CUSTOM",
             address: "Jl. Raya Bisnis No. 45, Denpasar, Bali",
             phone: "081234567890",
@@ -385,11 +385,8 @@
         function updateLogoSync(url) {
             storeConfig.logoUrl = url;
             
-            // Header Logo Box
             const headerBox = document.getElementById('header-logo-box');
-            // Dashboard Logo Box
             const dashBox = document.getElementById('dashboard-logo-box');
-            // Preview Logo Elements
             const previewImg = document.getElementById('preview-logo-img');
             const previewIcon = document.getElementById('preview-logo-icon');
 
@@ -427,11 +424,21 @@
             document.getElementById('setting-store-city').value = storeConfig.city;
             document.getElementById('setting-logo-url').value = storeConfig.logoUrl;
             document.getElementById('setting-signer-name').value = storeConfig.signer;
+
+            // Update Labels & Preview elements automatically
+            document.getElementById('header-store-title').textContent = storeConfig.name;
             document.getElementById('dashboard-store-name-label').textContent = storeConfig.name;
+            document.getElementById('preview-store-name').textContent = storeConfig.name;
+            document.getElementById('preview-store-address').textContent = storeConfig.address;
+            document.getElementById('preview-store-phone').textContent = "Telp: " + storeConfig.phone;
+            document.getElementById('preview-store-city').textContent = storeConfig.city + ",";
+            document.getElementById('preview-signer-name').textContent = storeConfig.signer;
+
             updateLogoSync(storeConfig.logoUrl);
         }
 
         function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
+        
         function closeSettingsModal() {
             document.getElementById('settings-modal').classList.add('hidden');
             storeConfig.name = document.getElementById('setting-store-name').value;
@@ -441,14 +448,12 @@
             storeConfig.signer = document.getElementById('setting-signer-name').value;
             
             const customUrl = document.getElementById('setting-logo-url').value.trim();
-            updateLogoSync(customUrl);
+            storeConfig.logoUrl = customUrl;
 
-            document.getElementById('dashboard-store-name-label').textContent = storeConfig.name;
-            document.getElementById('preview-store-name').textContent = storeConfig.name;
-            document.getElementById('preview-store-address').textContent = storeConfig.address;
-            document.getElementById('preview-store-phone').textContent = "Telp: " + storeConfig.phone;
-            document.getElementById('preview-store-city').textContent = storeConfig.city + ",";
-            document.getElementById('preview-signer-name').textContent = storeConfig.signer;
+            // Simpan otomatis ke localStorage agar tetap ada saat halaman direfresh
+            localStorage.setItem('gsd_store_config', JSON.stringify(storeConfig));
+
+            loadConfigToUI();
         }
 
         function calculateTotal() {
