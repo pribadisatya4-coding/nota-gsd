@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Generator Nota Otomatis - Auto Logo & Supabase</title>
+    <title>Aplikasi Generator Nota Otomatis</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         @media print {
@@ -32,13 +30,8 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold">NotaPro - Generator Nota Pintar</h1>
-                    <p class="text-xs text-indigo-200">Auto Logo, Supabase & Vercel Ready</p>
+                    <p class="text-xs text-indigo-200">Buat Nota Otomatis, Cetak & Download PDF</p>
                 </div>
-            </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="openSupabaseModal()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-medium border border-emerald-400 transition flex items-center gap-2">
-                    <i class="fa-solid fa-database"></i> <span id="supabase-status-text">Koneksi Supabase</span>
-                </button>
             </div>
         </div>
     </header>
@@ -108,12 +101,9 @@
             </div>
 
             <!-- Tombol Aksi -->
-            <div class="flex gap-3">
-                <button onclick="saveToSupabase()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke Supabase
-                </button>
-                <button onclick="printNota()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-print"></i> Cetak / PDF
+            <div>
+                <button onclick="printNota()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i> Cetak Nota / Download PDF
                 </button>
             </div>
         </div>
@@ -125,9 +115,9 @@
                     <!-- Header Nota -->
                     <div class="flex justify-between items-start border-b pb-6">
                         <div class="flex items-center space-x-4">
-                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-indigo-100 shadow-sm">
+                            <div id="preview-logo-container" class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center overflow-hidden border border-slate-200">
                                 <img id="preview-logo-img" src="" alt="Logo" class="w-full h-full object-cover">
-                                <i id="preview-logo-icon" class="fa-solid fa-store text-indigo-400 text-xl hidden"></i>
+                                <i id="preview-logo-icon" class="fa-solid fa-store text-indigo-500 text-xl hidden"></i>
                             </div>
                             <div>
                                 <h2 id="preview-store-name" class="text-xl font-bold text-slate-800">Nama Toko Anda</h2>
@@ -240,7 +230,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block font-medium text-slate-600 mb-1">Ganti Logo Toko (PNG / JPG / JPEG)</label>
+                    <label class="block font-medium text-slate-600 mb-1">Ganti Logo Toko (Opsional / PNG/JPG)</label>
                     <input type="file" id="setting-logo-file" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="handleLogoUpload(event)">
                     <p class="text-[10px] text-slate-400 mt-1">Atau masukkan URL logo online di bawah ini:</p>
                     <input type="text" id="setting-logo-url" placeholder="https://example.com/logo.png" class="w-full border rounded-lg px-3 py-2 mt-1" oninput="updateLogoSync(this.value)">
@@ -256,42 +246,14 @@
         </div>
     </div>
 
-    <!-- Modal Supabase Database -->
-    <div id="supabase-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-600"></i> Koneksi Database Supabase
-                </h3>
-                <button onclick="closeSupabaseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <p class="text-xs text-slate-500">Masukkan Project URL dan Anon Public API Key dari dashboard Supabase Anda.</p>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Supabase Project URL</label>
-                    <input type="text" id="sb-url" placeholder="https://xxxxxx.supabase.co" class="w-full border rounded-lg px-3 py-2">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Supabase Anon / Public Key</label>
-                    <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full border rounded-lg px-3 py-2">
-                </div>
-            </div>
-            <div class="flex justify-between items-center pt-2 border-t">
-                <button onclick="testSupabaseConnection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-medium">Uji Koneksi</button>
-                <button onclick="saveSupabaseConfig()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-medium">Simpan Konfigurasi</button>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript Logic -->
     <script>
+        const defaultLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzRmNDZlNSIvPgogIDxwYXRoIGQ9Ik0zMCA0NSBMNTAgMzAgTDcwIDQ1IEw3MCA3MCBMMzAgNzAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTQyIDcwIEw0MiA1NSBMNTggNTUgTDU4IDcwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
+
         let items = [
             { name: "Jasa Konsultasi & Setup Sistem", qty: 1, price: 1500000 },
             { name: "Maintenance Bulanan Vercel", qty: 2, price: 250000 }
         ];
-
-        // Default logo bawaan otomatis (SVG ikon nota profesional dalam format Data URI)
-        const defaultLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%234f46e5'><rect width='100' height='100' rx='20'/><path d='M30 32h40v9H30zm0 18h40v9H30zm0 18h25v9H30z' fill='white'/></svg>";
 
         let storeConfig = {
             name: "Toko Serba Ada Jaya",
@@ -302,7 +264,6 @@
             signer: "Budi Santoso (Kasir)"
         };
 
-        let sbConfig = { url: "", key: "" };
         let currentGrandTotal = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -311,16 +272,6 @@
             renderItems();
             setupEventListeners();
             calculateTotal();
-            
-            const savedSb = localStorage.getItem('sb_config');
-            if(savedSb) {
-                sbConfig = JSON.parse(savedSb);
-                document.getElementById('sb-url').value = sbConfig.url;
-                document.getElementById('sb-key').value = sbConfig.key;
-                if(sbConfig.url) {
-                    document.getElementById('supabase-status-text').textContent = "Supabase Connected";
-                }
-            }
         });
 
         function setupEventListeners() {
@@ -367,11 +318,12 @@
         }
 
         function updateLogoSync(url) {
-            storeConfig.logoUrl = url || defaultLogo;
+            const finalUrl = url.trim() ? url : defaultLogo;
+            storeConfig.logoUrl = finalUrl;
             const img = document.getElementById('preview-logo-img');
             const icon = document.getElementById('preview-logo-icon');
-            if (storeConfig.logoUrl) {
-                img.src = storeConfig.logoUrl;
+            if (finalUrl) {
+                img.src = finalUrl;
                 img.classList.remove('hidden');
                 icon.classList.add('hidden');
             } else {
@@ -403,7 +355,7 @@
             document.getElementById('setting-store-address').value = storeConfig.address;
             document.getElementById('setting-store-phone').value = storeConfig.phone;
             document.getElementById('setting-store-city').value = storeConfig.city;
-            document.getElementById('setting-logo-url').value = storeConfig.logoUrl;
+            document.getElementById('setting-logo-url').value = storeConfig.logoUrl === defaultLogo ? '' : storeConfig.logoUrl;
             document.getElementById('setting-signer-name').value = storeConfig.signer;
             updateLogoSync(storeConfig.logoUrl);
         }
@@ -416,76 +368,15 @@
             storeConfig.phone = document.getElementById('setting-store-phone').value;
             storeConfig.city = document.getElementById('setting-store-city').value;
             storeConfig.signer = document.getElementById('setting-signer-name').value;
-            let customLogo = document.getElementById('setting-logo-url').value.trim();
-            storeConfig.logoUrl = customLogo || defaultLogo;
+            
+            const customUrl = document.getElementById('setting-logo-url').value.trim();
+            updateLogoSync(customUrl);
 
             document.getElementById('preview-store-name').textContent = storeConfig.name;
             document.getElementById('preview-store-address').textContent = storeConfig.address;
             document.getElementById('preview-store-phone').textContent = "Telp: " + storeConfig.phone;
             document.getElementById('preview-store-city').textContent = "Hormat Kami, " + storeConfig.city;
             document.getElementById('preview-signer-name').textContent = storeConfig.signer;
-            updateLogoSync(storeConfig.logoUrl);
-        }
-
-        function openSupabaseModal() { document.getElementById('supabase-modal').classList.remove('hidden'); }
-        function closeSupabaseModal() { document.getElementById('supabase-modal').classList.add('hidden'); }
-
-        function saveSupabaseConfig() {
-            sbConfig.url = document.getElementById('sb-url').value.trim();
-            sbConfig.key = document.getElementById('sb-key').value.trim();
-            localStorage.setItem('sb_config', JSON.stringify(sbConfig));
-            alert('Konfigurasi Supabase berhasil disimpan!');
-            closeSupabaseModal();
-            document.getElementById('supabase-status-text').textContent = sbConfig.url ? "Supabase Connected" : "Koneksi Supabase";
-        }
-
-        async function testSupabaseConnection() {
-            const url = document.getElementById('sb-url').value.trim();
-            const key = document.getElementById('sb-key').value.trim();
-            if(!url || !key) { alert('URL dan Key harus diisi!'); return; }
-            try {
-                const sbClient = supabase.createClient(url, key);
-                const { data, error } = await sbClient.from('notas').select('id').limit(1);
-                if(error) throw error;
-                alert('Koneksi ke Supabase Berhasil!');
-            } catch(e) {
-                alert('Gagal terhubung ke Supabase: ' + (e.message || 'Pastikan URL, Key, dan tabel notas sudah benar.'));
-            }
-        }
-
-        async function saveToSupabase() {
-            const savedSb = JSON.parse(localStorage.getItem('sb_config'));
-            if(!savedSb || !savedSb.url || !savedSb.key) {
-                alert('Harap atur koneksi Supabase terlebih dahulu melalui tombol Koneksi Supabase.');
-                openSupabaseModal();
-                return;
-            }
-
-            const sbClient = supabase.createClient(savedSb.url, savedSb.key);
-
-            const notaData = {
-                nota_number: document.getElementById('nota-number').value,
-                date: document.getElementById('nota-date').value,
-                customer_name: document.getElementById('customer-name').value,
-                customer_address: document.getElementById('customer-address').value,
-                items: items,
-                store_config: storeConfig,
-                grand_total: currentGrandTotal
-            };
-
-            try {
-                const { data, error } = await sbClient
-                    .from('notas')
-                    .upsert(notaData, { onConflict: 'nota_number' });
-
-                if(error) {
-                    alert('Gagal menyimpan ke Supabase: ' + error.message);
-                } else {
-                    alert('Nota & logo berhasil disimpan ke Database Supabase!');
-                }
-            } catch(e) {
-                alert('Terjadi kesalahan jaringan saat menyimpan ke Supabase.');
-            }
         }
 
         function calculateTotal() {
