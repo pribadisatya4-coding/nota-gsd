@@ -329,12 +329,19 @@
     <!-- JavaScript Logic & Supabase Integration -->
     <script>
         // ==========================================
-        // KONFIGURASI SUPABASE
+        // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
         // ==========================================
         const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabase = null;
+        try {
+            if (window.supabase && SUPABASE_URL !== 'https://YOUR_PROJECT_ID.supabase.co') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.warn('Supabase not fully initialized yet.');
+        }
 
         let items = [];
         let storeConfig = JSON.parse(localStorage.getItem('gsd_store_config')) || {
@@ -353,7 +360,8 @@
         let currentPrintMode = 'a4';
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('nota-date').valueAsDate = new Date();
+            const dateEl = document.getElementById('nota-date');
+            if (dateEl) dateEl.valueAsDate = new Date();
             generateAutoNotaNumber();
             loadConfigToUI();
             renderItems();
@@ -368,7 +376,8 @@
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
-            document.getElementById('nota-number').value = `GSD/${year}/${month}/${paddedSeq}`;
+            const notaInput = document.getElementById('nota-number');
+            if(notaInput) notaInput.value = `GSD/${year}/${month}/${paddedSeq}`;
         }
 
         function setupEventListeners() {
@@ -381,6 +390,7 @@
 
         function renderItems() {
             const container = document.getElementById('items-container');
+            if (!container) return;
             container.innerHTML = '';
             
             if (items.length === 0) {
@@ -428,109 +438,128 @@
             const previewIcon = document.getElementById('preview-logo-icon');
 
             if (url && url.trim()) {
-                headerBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
-                dashBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
-                previewImg.src = url;
-                previewImg.classList.remove('hidden');
-                previewIcon.classList.add('hidden');
+                if(headerBox) headerBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
+                if(dashBox) dashBox.innerHTML = `<img src="${url}" alt="Logo" class="w-full h-full object-cover">`;
+                if(previewImg) {
+                    previewImg.src = url;
+                    previewImg.classList.remove('hidden');
+                }
+                if(previewIcon) previewIcon.classList.add('hidden');
             } else {
-                headerBox.innerHTML = `<i class="fa-solid fa-receipt"></i>`;
-                dashBox.innerHTML = `<i class="fa-solid fa-store"></i>`;
-                previewImg.src = '';
-                previewImg.classList.add('hidden');
-                previewIcon.classList.remove('hidden');
+                if(headerBox) headerBox.innerHTML = `<i class="fa-solid fa-receipt"></i>`;
+                if(dashBox) dashBox.innerHTML = `<i class="fa-solid fa-store"></i>`;
+                if(previewImg) {
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                }
+                if(previewIcon) previewIcon.classList.remove('hidden');
             }
         }
 
         function loadConfigToUI() {
-            document.getElementById('setting-store-name').value = storeConfig.name;
-            document.getElementById('setting-store-address').value = storeConfig.address;
-            document.getElementById('setting-store-phone').value = storeConfig.phone;
-            document.getElementById('setting-store-city').value = storeConfig.city;
-            document.getElementById('setting-logo-url').value = storeConfig.logoUrl;
-            document.getElementById('setting-signer-name').value = storeConfig.signer;
+            const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
 
-            document.getElementById('header-store-title').textContent = storeConfig.name;
-            document.getElementById('dashboard-store-name-label').textContent = storeConfig.name;
-            document.getElementById('preview-store-name').textContent = storeConfig.name;
-            document.getElementById('preview-store-address').textContent = storeConfig.address;
-            document.getElementById('preview-store-phone').textContent = "Telp: " + storeConfig.phone;
-            document.getElementById('preview-store-city').textContent = storeConfig.city + ",";
-            document.getElementById('preview-signer-name').textContent = storeConfig.signer;
+            setVal('setting-store-name', storeConfig.name);
+            setVal('setting-store-address', storeConfig.address);
+            setVal('setting-store-phone', storeConfig.phone);
+            setVal('setting-store-city', storeConfig.city);
+            setVal('setting-logo-url', storeConfig.logoUrl);
+            setVal('setting-signer-name', storeConfig.signer);
+
+            setText('header-store-title', storeConfig.name);
+            setText('dashboard-store-name-label', storeConfig.name);
+            setText('preview-store-name', storeConfig.name);
+            setText('preview-store-address', storeConfig.address);
+            setText('preview-store-phone', "Telp: " + storeConfig.phone);
+            setText('preview-store-city', storeConfig.city + ",");
+            setText('preview-signer-name', storeConfig.signer);
 
             updateLogoSync(storeConfig.logoUrl);
         }
 
-        function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
+        function openSettingsModal() { 
+            const modal = document.getElementById('settings-modal');
+            if(modal) modal.classList.remove('hidden'); 
+        }
         
         function closeSettingsModal() {
-            document.getElementById('settings-modal').classList.add('hidden');
-            storeConfig.name = document.getElementById('setting-store-name').value;
-            storeConfig.address = document.getElementById('setting-store-address').value;
-            storeConfig.phone = document.getElementById('setting-store-phone').value;
-            storeConfig.city = document.getElementById('setting-store-city').value;
-            storeConfig.signer = document.getElementById('setting-signer-name').value;
+            const modal = document.getElementById('settings-modal');
+            if(modal) modal.classList.add('hidden');
             
-            const customUrl = document.getElementById('setting-logo-url').value.trim();
-            storeConfig.logoUrl = customUrl;
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+
+            storeConfig.name = getVal('setting-store-name');
+            storeConfig.address = getVal('setting-store-address');
+            storeConfig.phone = getVal('setting-store-phone');
+            storeConfig.city = getVal('setting-store-city');
+            storeConfig.signer = getVal('setting-signer-name');
+            storeConfig.logoUrl = getVal('setting-logo-url').trim();
 
             localStorage.setItem('gsd_store_config', JSON.stringify(storeConfig));
             loadConfigToUI();
         }
 
         function calculateTotal() {
-            const notaNum = document.getElementById('nota-number').value;
-            const notaDate = document.getElementById('nota-date').value;
-            const custName = document.getElementById('customer-name').value || 'Nama Pelanggan';
-            const custAddr = document.getElementById('customer-address').value || 'Alamat Pelanggan';
-            const paymentStatus = document.getElementById('payment-status').value;
-            const discPct = Number(document.getElementById('discount-percent').value) || 0;
-            const taxPct = Number(document.getElementById('tax-percent').value) || 0;
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+            const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
 
-            document.getElementById('preview-nota-number').textContent = "No: " + notaNum;
-            document.getElementById('preview-nota-date').textContent = "Tanggal: " + notaDate;
-            document.getElementById('preview-customer-name').textContent = custName;
-            document.getElementById('preview-customer-address').textContent = custAddr;
+            const notaNum = getVal('nota-number');
+            const notaDate = getVal('nota-date');
+            const custName = getVal('customer-name') || 'Nama Pelanggan';
+            const custAddr = getVal('customer-address') || 'Alamat Pelanggan';
+            const paymentStatus = getVal('payment-status') || 'LUNAS / BERHASIL';
+            const discPct = Number(getVal('discount-percent')) || 0;
+            const taxPct = Number(getVal('tax-percent')) || 0;
+
+            setText('preview-nota-number', "No: " + notaNum);
+            setText('preview-nota-date', "Tanggal: " + notaDate);
+            setText('preview-customer-name', custName);
+            setText('preview-customer-address', custAddr);
             
             const badge = document.getElementById('preview-payment-status');
-            badge.textContent = paymentStatus;
-            if(paymentStatus.includes('LUNAS')) {
-                badge.className = "px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px]";
-            } else if(paymentStatus.includes('DP')) {
-                badge.className = "px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]";
-            } else {
-                badge.className = "px-2.5 py-1 bg-rose-100 text-rose-700 rounded-full font-bold text-[10px]";
+            if (badge) {
+                badge.textContent = paymentStatus;
+                if(paymentStatus.includes('LUNAS')) {
+                    badge.className = "px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px]";
+                } else if(paymentStatus.includes('DP')) {
+                    badge.className = "px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]";
+                } else {
+                    badge.className = "px-2.5 py-1 bg-rose-100 text-rose-700 rounded-full font-bold text-[10px]";
+                }
             }
 
             currentSubtotal = 0;
             const tableBody = document.getElementById('preview-items-table');
-            tableBody.innerHTML = '';
+            if(tableBody) {
+                tableBody.innerHTML = '';
 
-            items.forEach((item, idx) => {
-                const itemSubtotal = item.qty * item.price;
-                currentSubtotal += itemSubtotal;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="py-2 px-2">${idx + 1}</td>
-                    <td class="py-2 px-2 font-medium">${item.name || '-'}</td>
-                    <td class="py-2 px-2 text-center">${item.qty}</td>
-                    <td class="py-2 px-2 text-right">Rp ${item.price.toLocaleString('id-ID')}</td>
-                    <td class="py-2 px-2 text-right font-semibold">Rp ${itemSubtotal.toLocaleString('id-ID')}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
+                items.forEach((item, idx) => {
+                    const itemSubtotal = item.qty * item.price;
+                    currentSubtotal += itemSubtotal;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="py-2 px-2">${idx + 1}</td>
+                        <td class="py-2 px-2 font-medium">${item.name || '-'}</td>
+                        <td class="py-2 px-2 text-center">${item.qty}</td>
+                        <td class="py-2 px-2 text-right">Rp ${item.price.toLocaleString('id-ID')}</td>
+                        <td class="py-2 px-2 text-right font-semibold">Rp ${itemSubtotal.toLocaleString('id-ID')}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
 
             currentDiscountAmount = (currentSubtotal * discPct) / 100;
             const afterDiscount = currentSubtotal - currentDiscountAmount;
             currentTaxAmount = (afterDiscount * taxPct) / 100;
             currentGrandTotal = afterDiscount + currentTaxAmount;
 
-            document.getElementById('preview-subtotal').textContent = "Rp " + currentSubtotal.toLocaleString('id-ID');
-            document.getElementById('preview-disc-val').textContent = discPct;
-            document.getElementById('preview-discount-amount').textContent = "- Rp " + currentDiscountAmount.toLocaleString('id-ID');
-            document.getElementById('preview-tax-val').textContent = taxPct;
-            document.getElementById('preview-tax-amount').textContent = "Rp " + currentTaxAmount.toLocaleString('id-ID');
-            document.getElementById('preview-grand-total').textContent = "Rp " + currentGrandTotal.toLocaleString('id-ID');
+            setText('preview-subtotal', "Rp " + currentSubtotal.toLocaleString('id-ID'));
+            setText('preview-disc-val', discPct);
+            setText('preview-discount-amount', "- Rp " + currentDiscountAmount.toLocaleString('id-ID'));
+            setText('preview-tax-val', taxPct);
+            setText('preview-tax-amount', "Rp " + currentTaxAmount.toLocaleString('id-ID'));
+            setText('preview-grand-total', "Rp " + currentGrandTotal.toLocaleString('id-ID'));
         }
 
         function setPrintMode(mode) {
@@ -538,6 +567,8 @@
             const area = document.getElementById('printable-area');
             const btnA4 = document.getElementById('btn-mode-a4');
             const btnThermal = document.getElementById('btn-mode-thermal');
+
+            if (!area || !btnA4 || !btnThermal) return;
 
             if (mode === 'thermal') {
                 area.classList.remove('max-w-none');
@@ -553,16 +584,40 @@
 
         function downloadPDF() {
             const element = document.getElementById('printable-area');
-            const notaNum = document.getElementById('nota-number').value.replace(/\//g, '-');
+            const notaNumInput = document.getElementById('nota-number');
+            const notaNum = notaNumInput ? notaNumInput.value.replace(/\//g, '-') : 'Nota';
             const opt = {
                 margin:       10,
-                filename:     `Nota-${notaNum}.pdf`, image:        { type: 'jpeg', quality: 0.98 }, html2canvas:  { scale: 2, useCORS: true }, jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } }; html2pdf().from(element).set(opt).save(); }  function sendWhatsApp() { const custName = document.getElementById('customer-name').value \vert{}\vert{} 'Pelanggan'; const custPhone = document.getElementById('customer-phone').value.trim(); const notaNum = document.getElementById('nota-number').value; const notaDate = document.getElementById('nota-date').value; const paymentStatus = document.getElementById('payment-status').value;  let text = `Halo *${custName}*, terima kasih telah berbelanja di *${storeConfig.name}*.\n\n`;
+                filename:     `Nota-${notaNum}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            if(window.html2pdf) {
+                html2pdf().from(element).set(opt).save();
+            } else {
+                window.print();
+            }
+        }
+
+        function sendWhatsApp() {
+            const custName = document.getElementById('customer-name').value || 'Pelanggan';
+            const custPhone = document.getElementById('customer-phone').value.trim();
+            const notaNum = document.getElementById('nota-number').value;
+            const notaDate = document.getElementById('nota-date').value;
+            const paymentStatus = document.getElementById('payment-status').value;
+
+            let text = `Halo *${custName}*, terima kasih telah berbelanja di *${storeConfig.name}*.\n\n`;
             text += `Berikut adalah rincian nota Anda:\n`;
             text += `No Nota: ${notaNum}\n`;
-            text += `Tanggal: ${notaDate}\n\n`;  items.forEach((item, i) => { text += `${i+1}. ${item.name} (${item.qty}x @Rp ${item.price.toLocaleString('id-ID')}) = *Rp${(item.qty * item.price).toLocaleString('id-ID')}*\n`;
+            text += `Tanggal: ${notaDate}\n\n`;
+            
+            items.forEach((item, i) => {
+                text += `${i+1}. ${item.name} (${item.qty}x @Rp ${item.price.toLocaleString('id-ID')}) = *Rp ${(item.qty * item.price).toLocaleString('id-ID')}*\n`;
             });
 
-            text += `\n*Total Akhir: Rp ${currentGrandTotal.toLocaleString('id-ID')}*\n`; text += `Status: *${paymentStatus}*\n\n`;
+            text += `\n*Total Akhir: Rp ${currentGrandTotal.toLocaleString('id-ID')}*\n`;
+            text += `Status: *${paymentStatus}*\n\n`;
             text += `Terima kasih atas kepercayaan Anda! 🙏`;
 
             let waUrl = `https://wa.me/${custPhone}?text=${encodeURIComponent(text)}`;
@@ -570,9 +625,14 @@
         }
 
         // ==========================================
-        // FUNGSI SUPABASE (SUDAH DIPERBAIKI)
+        // FUNGSI SUPABASE & RIWAYAT
         // ==========================================
         async function saveCurrentNota() {
+            if (!supabase) {
+                alert('Supabase belum dikonfigurasi! Masukkan SUPABASE_URL dan SUPABASE_ANON_KEY terlebih dahulu pada kode script.');
+                return;
+            }
+
             if (items.length === 0) {
                 alert('Tambahkan minimal 1 item barang sebelum menyimpan!');
                 return;
@@ -605,8 +665,17 @@
         }
 
         async function openHistoryModal() {
-            document.getElementById('history-modal').classList.remove('hidden');
+            const modal = document.getElementById('history-modal');
+            if(modal) modal.classList.remove('hidden');
+
             const listContainer = document.getElementById('history-list');
+            if(!listContainer) return;
+
+            if (!supabase) {
+                listContainer.innerHTML = `<p class="text-rose-500 text-center py-4">Supabase belum dikonfigurasi pada file script.</p>`;
+                return;
+            }
+
             listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">Memuat data dari Supabase...</p>`;
 
             const { data, error } = await supabase
@@ -629,7 +698,7 @@
                     div.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-slate-100 transition";
                     div.innerHTML = `
                         <div>
-                            <strong class="text-indigo-700">${h.nota_number}</strong> -${h.customer_name}<br>
+                            <strong class="text-indigo-700">${h.nota_number}</strong> - ${h.customer_name}<br>
                             <span class="text-slate-400 text-[11px]">${h.nota_date} (${h.payment_status})</span>
                         </div>
                         <div class="text-right">
@@ -643,17 +712,24 @@
         }
 
         function closeHistoryModal() { 
-            document.getElementById('history-modal').classList.add('hidden'); 
+            const modal = document.getElementById('history-modal');
+            if(modal) modal.classList.add('hidden'); 
         }
 
         function resetForm() {
             if(confirm('Reset semua input form nota?')) {
                 generateAutoNotaNumber();
-                document.getElementById('customer-name').value = '';
-                document.getElementById('customer-phone').value = '';
-                document.getElementById('customer-address').value = '';
-                document.getElementById('discount-percent').value = 0;
-                document.getElementById('tax-percent').value = 0;
+                const custName = document.getElementById('customer-name');
+                const custPhone = document.getElementById('customer-phone');
+                const custAddr = document.getElementById('customer-address');
+                const disc = document.getElementById('discount-percent');
+                const tax = document.getElementById('tax-percent');
+
+                if(custName) custName.value = '';
+                if(custPhone) custPhone.value = '';
+                if(custAddr) custAddr.value = '';
+                if(disc) disc.value = 0;
+                if(tax) tax.value = 0;
                 items = [];
                 renderItems();
             }
